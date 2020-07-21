@@ -9,7 +9,7 @@ import torch.optim as optim
 from tqdm.auto import tqdm
 
 from cerbero.core import DictDataLoader
-from cerbero.core import ClassifierConfig, MultitaskClassifier
+from cerbero.models import ClassifierConfig, MultitaskClassifier
 from cerbero.types import Config
 from cerbero.utils.config_utils import merge_config
 from cerbero.utils.lr_schedulers import LRSchedulerConfig
@@ -21,7 +21,7 @@ from cerbero.loggers import (
     LogManagerConfig,
     LogWriter,
     LogWriterConfig,
-    TensorBoardWriter
+    TensorBoardWriter,
 )
 from cerbero.schedulers import batch_schedulers
 

@@ -10,6 +10,7 @@ from cerbero.metrics import Scorer
 
 Outputs = Mapping[str, List[torch.FloatTensor]]
 
+
 class Operation:
     """A single operation (forward pass of a module) to execute in a Task.
 
@@ -60,6 +61,7 @@ class Operation:
             f"module_name={self.module_name}, "
             f"inputs={self.inputs})"
         )
+
 
 class Task:
     r"""A single task (a collection of modules and specified path through them).

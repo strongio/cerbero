@@ -15,6 +15,7 @@ DEFAULT_INPUT_DATA_KEY = "input_data"
 DEFAULT_DATASET_NAME = "CerberoDataset"
 DEFAULT_TASK_NAME = "task"
 
+
 class DictDataset(Dataset):
     """A dataset where both the data fields and labels are stored in as dictionaries.
 
