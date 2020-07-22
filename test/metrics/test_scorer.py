@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 from cerbero.metrics import Scorer
-from snorkel.utils import preds_to_probs
+from cerbero.utils import preds_to_probs
 
 
 class ScorerTest(unittest.TestCase):

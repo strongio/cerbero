@@ -1,7 +1,7 @@
 # Library dependencies for Python code.  You need to install these with
 # `pip install -r requirements.txt` or
 # `conda install --file requirements.txt`
-# to ensure that you can use all Snorkel code.
+# to ensure that you can use all Cerbero code.
 # NOTE: all essential packages must be placed under a section named
 # '#### ESSENTIAL ...' so that the script `./scripts/check_requirements.py`
 # can find them.

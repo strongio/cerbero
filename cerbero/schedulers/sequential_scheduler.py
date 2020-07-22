@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from snorkel.core import DictDataLoader
+from cerbero.core import DictDataLoader
 
 from .scheduler import BatchIterator, Scheduler
 

@@ -3,7 +3,7 @@ from typing import Dict
 from setuptools import find_packages, setup
 
 # version.py defines the VERSION and VERSION_SHORT variables.
-# We use exec here so we don't import snorkel.
+# We use exec here so we don't import cerbero.
 VERSION: Dict[str, str] = {}
 with open("cerbero/version.py", "r") as version_file:
     exec(version_file.read(), VERSION)
