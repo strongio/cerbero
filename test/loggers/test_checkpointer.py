@@ -6,7 +6,7 @@ import unittest
 from cerbero.models import MultitaskClassifier
 from cerbero.loggers import Checkpointer
 
-log_manager_config = {"counter_unit": epochs, "evaluation_freq": 1}
+log_manager_config = {"counter_unit": "epochs", "evaluation_freq": 1}
 
 
 class TestLogManager(unittest.TestCase):

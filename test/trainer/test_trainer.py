@@ -12,11 +12,11 @@ import torch.optim as optim
 from cerbero.core import (
     DictDataLoader,
     DictDataset,
-    MultitaskClassifier,
     Operation,
     Task,
-    Trainer,
 )
+from cerbero.trainer import Trainer
+from cerbero.models import MultitaskClassifier
 from cerbero.loggers import LogWriter, TensorBoardWriter
 
 TASK_NAMES = ["task1", "task2"]

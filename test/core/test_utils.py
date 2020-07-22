@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from cerbero.utils import collect_flow_outputs_by_suffix, list_to_tensor, pad_batch
+from cerbero.core.utils import collect_flow_outputs_by_suffix, list_to_tensor, pad_batch
 
 
 class UtilsTest(unittest.TestCase):

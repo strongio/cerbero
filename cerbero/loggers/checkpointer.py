@@ -7,6 +7,8 @@ from typing import Any, Dict, Iterable, List, Optional, Set
 from cerbero.models import MultitaskClassifier
 from cerbero.types import Config
 
+Metrics = Dict[str, float]
+
 
 class CheckpointerConfig(Config):
     """Manager for checkpointing model.
