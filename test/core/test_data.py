@@ -6,8 +6,9 @@ from cerbero.core import DictDataset, DictDataLoader
 from cerbero.core.data import (
     DEFAULT_DATASET_NAME,
     DEFAULT_INPUT_DATA_KEY,
-    DEFAULT_TASK_NAME
+    DEFAULT_TASK_NAME,
 )
+
 
 class DatasetTest(unittest.TestCase):
     def test_classifier_dataset(self):

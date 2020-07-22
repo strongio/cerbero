@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from cerbero.core import cross_entropy_with_probs
 from cerbero.utils import preds_to_probs
 
+
 class SoftCrossEntropyTest(unittest.TestCase):
     def test_sce_equals_ce(self):
         # Does soft ce loss match classic ce loss when labels are one-hot?

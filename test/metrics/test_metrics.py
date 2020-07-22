@@ -5,6 +5,7 @@ import numpy as np
 from cerbero.metrics import metric_score
 from cerbero.utils import preds_to_probs
 
+
 class MetricsTest(unittest.TestCase):
     def test_accuracy_basic(self):
         golds = np.array([0, 0, 0, 1, 1])

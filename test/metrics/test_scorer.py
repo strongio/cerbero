@@ -90,5 +90,6 @@ class ScorerTest(unittest.TestCase):
         results_expected = dict(accuracy=0.6)
         self.assertEqual(results, results_expected)
 
+
 if __name__ == "__main__":
     unittest.main()

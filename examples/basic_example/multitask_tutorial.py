@@ -324,8 +324,12 @@ plt.show()
 # - The X_dict should map data field names to data (in this case, we only need one field, since our data is represented by a single Tensor). You can name the field whatever you want; you'll just need to make sure that your `Task` object refers to the right field name in its task flow.
 # - The Y_dict should map a task name to a set of labels. This will tell the model what path through the network to use when making predictions or calculating loss on batches from this dataset. At this point we haven't yet defined our
 
-X_dict = {"inv_circle_data": torch.FloatTensor(X_train["inv_circle"])}  # Filled in by you
-Y_dict = {"inv_circle_task": torch.LongTensor(Y_train["inv_circle"])}  # Filled in by you
+X_dict = {
+    "inv_circle_data": torch.FloatTensor(X_train["inv_circle"])
+}  # Filled in by you
+Y_dict = {
+    "inv_circle_task": torch.LongTensor(Y_train["inv_circle"])
+}  # Filled in by you
 inv_dataset = DictDataset("InvCircleDataset", "train", X_dict, Y_dict)
 inv_dataloader = DictDataLoader(dataset=inv_dataset, batch_size=32)
 
@@ -340,10 +344,12 @@ all_dataloaders = dataloaders + [inv_dataloader]
 # Uncomment and fill in the arguments to create a Task object for the inverse_circle task.
 inv_circle_task = Task(
     name="inv_circle_task",  # Filled in by you
-    module_pool=nn.ModuleDict({"base_mlp": base_mlp, "inv_circle_head": nn.Linear(4, 2)}),  # Filled in by you
+    module_pool=nn.ModuleDict(
+        {"base_mlp": base_mlp, "inv_circle_head": nn.Linear(4, 2)}
+    ),  # Filled in by you
     op_sequence=[
         Operation("base_mlp", [("_input_", "inv_circle_data")]),
-        Operation("inv_circle_head", ["base_mlp"])
+        Operation("inv_circle_head", ["base_mlp"]),
     ],  # Filled in by you
 )
 
@@ -352,7 +358,9 @@ inv_circle_task = Task(
 # Once we have our task objects, creating the new multi-task model is as easy as adding the new task to the list of tasks at model initialization time.
 
 # Add your new task to the list of tasks for creating the MTL model
-model = MultitaskClassifier([circle_task, square_task, inv_circle_task])  # Filled in by you
+model = MultitaskClassifier(
+    [circle_task, square_task, inv_circle_task]
+)  # Filled in by you
 
 # ### Train the model
 
