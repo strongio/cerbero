@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Optional
 
-from cerbero.models import MultitaskClassifier
+from cerbero.models import MultitaskModel
 from cerbero.types import Config
 
 from .checkpointer import Checkpointer
@@ -127,7 +127,7 @@ class LogManager:
         self.epoch_count = 0
         self.unit_count = 0
 
-    def cleanup(self, model: MultitaskClassifier) -> MultitaskClassifier:
+    def cleanup(self, model: MultitaskModel) -> MultitaskModel:
         """Close the log writer and checkpointer if needed. Reload best model."""
         if self.log_writer is not None:
             self.log_writer.cleanup()

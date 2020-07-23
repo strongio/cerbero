@@ -14,13 +14,13 @@ from cerbero.core import (
     Operation,
     Task,
 )
-from cerbero.models import MultitaskClassifier
+from cerbero.models import MultitaskModel
 
 NUM_EXAMPLES = 10
 BATCH_SIZE = 2
 
 
-class ClassifierTest(unittest.TestCase):
+class MultitaskModelTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.task1 = create_task("task1", module_suffixes=["A", "A"])
@@ -33,14 +33,14 @@ class ClassifierTest(unittest.TestCase):
         torch.manual_seed(123)
 
     def test_onetask_model(self):
-        model = MultitaskClassifier(tasks=[self.task1])
+        model = MultitaskModel(tasks=[self.task1])
         self.assertEqual(len(model.task_names), 1)
         self.assertEqual(len(model.op_sequences), 1)
         self.assertEqual(len(model.module_pool), 2)
 
     def test_twotask_none_overlap_model(self):
         """Add two tasks with totally separate modules and flows"""
-        model = MultitaskClassifier(tasks=[self.task1, self.task2])
+        model = MultitaskModel(tasks=[self.task1, self.task2])
         self.assertEqual(len(model.task_names), 2)
         self.assertEqual(len(model.op_sequences), 2)
         self.assertEqual(len(model.module_pool), 4)
@@ -49,7 +49,7 @@ class ClassifierTest(unittest.TestCase):
         """Add two tasks with identical modules and flows"""
         task1 = create_task("task1", module_suffixes=["A", "A"])
         task2 = create_task("task2", module_suffixes=["A", "A"])
-        model = MultitaskClassifier(tasks=[task1, task2])
+        model = MultitaskModel(tasks=[task1, task2])
         self.assertEqual(len(model.task_names), 2)
         self.assertEqual(len(model.op_sequences), 2)
         self.assertEqual(len(model.module_pool), 2)
@@ -58,25 +58,25 @@ class ClassifierTest(unittest.TestCase):
         """Add two tasks with overlapping modules and flows"""
         task1 = create_task("task1", module_suffixes=["A", "A"])
         task2 = create_task("task2", module_suffixes=["A", "B"])
-        model = MultitaskClassifier(tasks=[task1, task2])
+        model = MultitaskModel(tasks=[task1, task2])
         self.assertEqual(len(model.task_names), 2)
         self.assertEqual(len(model.op_sequences), 2)
         self.assertEqual(len(model.module_pool), 3)
 
     def test_bad_tasks(self):
         with self.assertRaisesRegex(ValueError, "Found duplicate task"):
-            MultitaskClassifier(tasks=[self.task1, self.task1])
+            MultitaskModel(tasks=[self.task1, self.task1])
         with self.assertRaisesRegex(ValueError, "Unrecognized task type"):
-            MultitaskClassifier(tasks=[self.task1, {"fake_task": 42}])
+            MultitaskModel(tasks=[self.task1, {"fake_task": 42}])
         with self.assertRaisesRegex(ValueError, "Unsuccessful operation"):
             task1 = create_task("task1")
             task1.op_sequence[0].inputs[0] = (0, 0)
-            model = MultitaskClassifier(tasks=[task1])
+            model = MultitaskModel(tasks=[task1])
             X_dict = self.dataloader.dataset.X_dict
             model.forward(X_dict, [task1.name])
 
     def test_no_data_parallel(self):
-        model = MultitaskClassifier(tasks=[self.task1, self.task2], dataparallel=False)
+        model = MultitaskModel(tasks=[self.task1, self.task2], dataparallel=False)
         self.assertEqual(len(model.task_names), 2)
         self.assertIsInstance(model.module_pool["linear1A"], nn.Module)
 
@@ -88,12 +88,12 @@ class ClassifierTest(unittest.TestCase):
             module_pool=nn.ModuleDict({"identity": nn.Identity()}),
             op_sequence=[Operation("identity", [])],
         )
-        model = MultitaskClassifier(tasks=[task], dataparallel=False)
+        model = MultitaskModel(tasks=[task], dataparallel=False)
         outputs = model.forward(dataset.X_dict, ["task"])
         self.assertIn("_input_", outputs)
 
     def test_predict(self):
-        model = MultitaskClassifier([self.task1])
+        model = MultitaskModel([self.task1])
         results = model.predict(self.dataloader)
         self.assertEqual(sorted(list(results.keys())), ["golds", "probs"])
         np.testing.assert_array_equal(
@@ -114,7 +114,7 @@ class ClassifierTest(unittest.TestCase):
     def test_empty_batch(self):
         dataset = create_dataloader("task1", shuffle=False).dataset
         dataset.Y_dict["task1"] = torch.full_like(dataset.Y_dict["task1"], -1)
-        model = MultitaskClassifier([self.task1])
+        model = MultitaskModel([self.task1])
         loss_dict, count_dict = model.calculate_loss(dataset.X_dict, dataset.Y_dict)
         self.assertFalse(loss_dict)
         self.assertFalse(count_dict)
@@ -122,7 +122,7 @@ class ClassifierTest(unittest.TestCase):
     def test_partially_empty_batch(self):
         dataset = create_dataloader("task1", shuffle=False).dataset
         dataset.Y_dict["task1"][0] = -1
-        model = MultitaskClassifier([self.task1])
+        model = MultitaskModel([self.task1])
         loss_dict, count_dict = model.calculate_loss(dataset.X_dict, dataset.Y_dict)
         self.assertEqual(count_dict["task1"], 9)
 
@@ -139,7 +139,7 @@ class ClassifierTest(unittest.TestCase):
         )
         dataloader = DictDataLoader(dataset, batch_size=BATCH_SIZE)
 
-        model = MultitaskClassifier([self.task1])
+        model = MultitaskModel([self.task1])
         loss_dict, count_dict = model.calculate_loss(dataset.X_dict, dataset.Y_dict)
         self.assertIn("task1", loss_dict)
 
@@ -160,7 +160,7 @@ class ClassifierTest(unittest.TestCase):
         self.assertIn("other_task/dataset/train/accuracy", results)
 
     def test_score(self):
-        model = MultitaskClassifier([self.task1])
+        model = MultitaskModel([self.task1])
         metrics = model.score([self.dataloader])
         # deterministic random tie breaking alternates predicted labels
         self.assertEqual(metrics["task1/dataset/train/accuracy"], 0.4)
@@ -191,7 +191,7 @@ class ClassifierTest(unittest.TestCase):
         )
         op_sequence = [op0]
         task = Task(name=task_name, module_pool=module_pool, op_sequence=op_sequence)
-        model = MultitaskClassifier([task])
+        model = MultitaskModel([task])
 
         # Create dataset
         y_list = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]
@@ -220,7 +220,7 @@ class ClassifierTest(unittest.TestCase):
         # Make task2's second linear layer have different weights
         task2.module_pool["linear2"] = nn.Linear(2, 2)
 
-        model = MultitaskClassifier([task1])
+        model = MultitaskModel([task1])
         self.assertTrue(
             torch.eq(
                 task1.module_pool["linear2"].weight,
@@ -228,7 +228,7 @@ class ClassifierTest(unittest.TestCase):
             ).all()
         )
         model.save(checkpoint_path)
-        model = MultitaskClassifier([task2])
+        model = MultitaskModel([task2])
         self.assertFalse(
             torch.eq(
                 task1.module_pool["linear2"].weight,

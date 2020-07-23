@@ -2,7 +2,7 @@ import shutil
 import tempfile
 import unittest
 
-from cerbero.models import MultitaskClassifier
+from cerbero.models import MultitaskModel
 from cerbero.loggers import Checkpointer, LogManager
 
 
@@ -116,7 +116,7 @@ class TestLogManager(unittest.TestCase):
             n_batches_per_epoch=2, checkpointer=checkpointer, log_writer=None
         )
 
-        classifier = MultitaskClassifier([])
+        classifier = MultitaskModel([])
         best_classifier = log_manager.cleanup(classifier)
         self.assertEqual(best_classifier, classifier)
 

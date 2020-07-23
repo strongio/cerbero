@@ -16,7 +16,7 @@ from cerbero.core import (
     Task,
 )
 from cerbero.trainer import Trainer
-from cerbero.models import MultitaskClassifier
+from cerbero.models import MultitaskModel
 from cerbero.loggers import LogWriter, TensorBoardWriter
 
 TASK_NAMES = ["task1", "task2"]
@@ -64,7 +64,7 @@ tasks = [
     create_task(TASK_NAMES[0], module_suffixes=["A", "A"]),
     create_task(TASK_NAMES[1], module_suffixes=["A", "B"]),
 ]
-model = MultitaskClassifier([tasks[0]])
+model = MultitaskModel([tasks[0]])
 
 
 class TrainerTest(unittest.TestCase):
@@ -75,7 +75,7 @@ class TrainerTest(unittest.TestCase):
 
     def test_trainer_twotask(self):
         """Train a model with overlapping modules and flows"""
-        multitask_model = MultitaskClassifier(tasks)
+        multitask_model = MultitaskModel(tasks)
         trainer = Trainer(**base_config)
         trainer.fit(multitask_model, dataloaders)
 
