@@ -54,17 +54,23 @@ def metric_score(
         raise ValueError(msg)
 
     # Print helpful error messages if golds or preds has invalid shape or type
-    golds = to_int_label_array(golds) if golds is not None else None
-    preds = to_int_label_array(preds) if preds is not None else None
+    if metric is not "mse":
+        golds = to_int_label_array(golds) if golds is not None else None
+        preds = to_int_label_array(preds) if preds is not None else None
 
     # Optionally filter out examples (e.g., abstain predictions or unknown labels)
+    # BUG: At the moment filter_dict is used to filter out examples from arrays based
+    #   on the specified labels to filter. Currently this causes a broadcast error in
+    #   filter_labels since we cannot multiply e.g., classification labels (n) by some
+    #   float tensor labels (n, 3).
+    # HACK: for now I'm going to comment out filter_labels and process all examples
     label_dict = {"golds": golds, "preds": preds, "probs": probs}
     if filter_dict:
         if set(filter_dict.keys()).difference(set(label_dict.keys())):
             raise ValueError(
                 "filter_dict must only include keys in ['golds', 'preds', 'probs']"
             )
-        label_dict = filter_labels(label_dict, filter_dict)
+        # label_dict = filter_labels(label_dict, filter_dict)
 
     # Confirm that required label sets are available
     func, label_names = METRICS[metric]
@@ -118,4 +124,5 @@ METRICS = {
     "fbeta": Metric(skmetrics.fbeta_score),
     "matthews_corrcoef": Metric(skmetrics.matthews_corrcoef),
     "roc_auc": Metric(_roc_auc_score, ["golds", "probs"]),
+    "mse": Metric(skmetrics.mean_squared_error, ["golds", "preds"])
 }
