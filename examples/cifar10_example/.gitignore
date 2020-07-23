@@ -1,0 +1,3 @@
+# Ignore example artifacts
+data/
+checkpoints/
