@@ -368,9 +368,10 @@ class MultitaskModel(nn.Module):
         if return_preds:
             pred_dict: Dict[str, np.ndarray] = defaultdict(list)
             for task_name, probs in prob_dict.items():
-                pred_dict[task_name] = probs
-                if "mse" not in self.scorers[task_name].metrics:
-                    pred_dict[task_name] = probs_to_preds(probs)
+                pred_dict[task_name] = probs_to_preds(probs)
+                if task_name in self.scorers:
+                    if "mse" in self.scorers[task_name].metrics:
+                        pred_dict[task_name] = probs
 
         results = {"golds": gold_dict, "probs": prob_dict}
 

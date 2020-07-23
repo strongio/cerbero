@@ -64,6 +64,7 @@ def metric_score(
     #   filter_labels since we cannot multiply e.g., classification labels (n) by some
     #   float tensor labels (n, 3).
     # HACK: for now I'm going to comment out filter_labels and process all examples
+    # WARNING: Commenting label_dict causes the test_metrics.py to fail
     label_dict = {"golds": golds, "preds": preds, "probs": probs}
     if filter_dict:
         if set(filter_dict.keys()).difference(set(label_dict.keys())):
