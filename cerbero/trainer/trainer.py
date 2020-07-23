@@ -9,7 +9,7 @@ import torch.optim as optim
 from tqdm.auto import tqdm
 
 from cerbero.core import DictDataLoader
-from cerbero.models import ClassifierConfig, MultitaskClassifier
+from cerbero.models import ModelConfig, MultitaskModel
 from cerbero.types import Config
 from cerbero.utils.config_utils import merge_config
 from cerbero.utils.lr_schedulers import LRSchedulerConfig
@@ -52,7 +52,7 @@ class TrainerConfig(Config):
     progress_bar
         If True, print a tqdm progress bar during training
     model_config
-        Settings for the MultitaskClassifier
+        Settings for the MultitaskModel
     log_manager_config
         Settings for the LogManager
     checkpointing
@@ -87,7 +87,7 @@ class TrainerConfig(Config):
     valid_split: str = "valid"
     test_split: str = "test"
     progress_bar: bool = True
-    model_config: ClassifierConfig = ClassifierConfig()  # type:ignore
+    model_config: ModelConfig = ModelConfig()  # type:ignore
     log_manager_config: LogManagerConfig = LogManagerConfig()  # type:ignore
     checkpointing: bool = False
     checkpointer_config: CheckpointerConfig = CheckpointerConfig()  # type:ignore
@@ -102,7 +102,7 @@ class TrainerConfig(Config):
 
 
 class Trainer:
-    """A class for training a MultitaskClassifier.
+    """A class for training a MultitaskModel.
 
     Parameters
     ----------
@@ -138,9 +138,9 @@ class Trainer:
         self.name = name if name is not None else type(self).__name__
 
     def fit(
-        self, model: MultitaskClassifier, dataloaders: List["DictDataLoader"]
+        self, model: MultitaskModel, dataloaders: List["DictDataLoader"]
     ) -> None:
-        """Train a MultitaskClassifier.
+        """Train a MultitaskModel.
 
         Parameters
         ----------
@@ -417,7 +417,7 @@ class Trainer:
 
     def _evaluate(
         self,
-        model: MultitaskClassifier,
+        model: MultitaskModel,
         dataloaders: List["DictDataLoader"],
         split: str,
     ) -> Metrics:
@@ -427,7 +427,7 @@ class Trainer:
 
     def _logging(
         self,
-        model: MultitaskClassifier,
+        model: MultitaskModel,
         dataloaders: List["DictDataLoader"],
         batch_size: int,
     ) -> Metrics:
@@ -469,7 +469,7 @@ class Trainer:
                 )
 
     def _checkpoint_model(
-        self, model: MultitaskClassifier, metric_dict: Metrics
+        self, model: MultitaskModel, metric_dict: Metrics
     ) -> None:
         """Save the current model."""
         if self.checkpointer is not None:
@@ -533,7 +533,7 @@ class Trainer:
 
         logging.info(f"[{self.name}] Trainer config saved in {trainer_path}")
 
-    def load(self, trainer_path: str, model: Optional[MultitaskClassifier]) -> None:
+    def load(self, trainer_path: str, model: Optional[MultitaskModel]) -> None:
         """Load trainer config and optimizer state from the specified json file path to the trainer object. The optimizer state is stored, too. However, it only makes sense if loaded with the correct model again.
 
         Parameters
@@ -541,7 +541,7 @@ class Trainer:
         trainer_path
             The path to the saved trainer config to be loaded
         model
-            MultitaskClassifier for which the optimizer has been set. Parameters of optimizer must fit to model parameters. This model
+            MultitaskModel for which the optimizer has been set. Parameters of optimizer must fit to model parameters. This model
             shall be the model which was fit by the stored Trainer.
 
         Example

@@ -29,8 +29,8 @@ from cerbero.utils import probs_to_preds
 OutputDict = Dict[str, Union[Any, Mapping[str, Any]]]
 
 
-class ClassifierConfig(Config):
-    """A classifier built from one or more tasks to support advanced workflows.
+class ModelConfig(Config):
+    """A model built from one or more tasks to support advanced workflows.
 
     Parameters
     ----------
@@ -46,15 +46,15 @@ class ClassifierConfig(Config):
     dataparallel: bool = True
 
 
-class MultitaskClassifier(nn.Module):
-    r"""A classifier built from one or more tasks to support advanced workflows.
+class MultitaskModel(nn.Module):
+    r"""A model built from one or more tasks to support advanced workflows.
 
     Parameters
     ----------
     tasks
         A list of ``Task``\s to build a model from
     name
-        The name of the classifier
+        The name of the model
 
     Attributes
     ----------
@@ -80,7 +80,7 @@ class MultitaskClassifier(nn.Module):
         self, tasks: List[Task], name: Optional[str] = None, **kwargs: Any
     ) -> None:
         super().__init__()
-        self.config = ClassifierConfig(**kwargs)
+        self.config = ModelConfig(**kwargs)
         self.name = name or type(self).__name__
 
         # Initiate the model attributes

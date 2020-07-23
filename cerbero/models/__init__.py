@@ -1,1 +1,1 @@
-from .multitask_model import ClassifierConfig, MultitaskClassifier
+from .multitask_model import ModelConfig, MultitaskModel
