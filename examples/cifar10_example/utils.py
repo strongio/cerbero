@@ -9,29 +9,21 @@ from sklearn.model_selection import train_test_split
 from tqdm.auto import tqdm
 
 DataSet = Tuple[
-    Tuple[np.ndarray, np.ndarray],
-    Tuple[np.ndarray, np.ndarray],
+    Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray],
 ]
 DataSets = Tuple[DataSet, DataSet]
+
 
 def make_cifar_dataset(train: bool = True, **kwargs: Any) -> DataSets:
     """Generate CIFAR10 dataset with RGB labels"""
     dataset = torchvision.datasets.CIFAR10(
-        root='./data',
-        train=train,
-        download=True,
-        transform=transforms.ToTensor()
+        root="./data", train=train, download=True, transform=transforms.ToTensor()
     )
     dataloader = torch.utils.data.DataLoader(
-        dataset,
-        batch_size=1,
-        shuffle=False,
-        num_workers=2
+        dataset, batch_size=1, shuffle=False, num_workers=2
     )
 
-    norm_transform = transforms.Normalize(
-        (0.5, 0.5, 0.5), (0.5, 0.5, 0.5)
-    )
+    norm_transform = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
     images, class_labels, rgb_labels = [], [], []
 
     count = 0
@@ -41,7 +33,7 @@ def make_cifar_dataset(train: bool = True, **kwargs: Any) -> DataSets:
         _image, label = dataiter.next()
 
         # Compute RGB mean
-        rgb_mean = _image[0].mean(dim=(1,2))
+        rgb_mean = _image[0].mean(dim=(1, 2))
 
         # Normalize image and add labels to list
         _image = norm_transform(_image[0])
@@ -56,6 +48,7 @@ def make_cifar_dataset(train: bool = True, **kwargs: Any) -> DataSets:
     rgb_labels = np.stack(rgb_labels)
 
     return split_data(images, class_labels, rgb_labels, **kwargs)
+
 
 def split_data(
     images: np.ndarray,

@@ -125,5 +125,5 @@ METRICS = {
     "fbeta": Metric(skmetrics.fbeta_score),
     "matthews_corrcoef": Metric(skmetrics.matthews_corrcoef),
     "roc_auc": Metric(_roc_auc_score, ["golds", "probs"]),
-    "mse": Metric(skmetrics.mean_squared_error, ["golds", "preds"])
+    "mse": Metric(skmetrics.mean_squared_error, ["golds", "preds"]),
 }

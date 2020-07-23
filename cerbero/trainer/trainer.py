@@ -137,9 +137,7 @@ class Trainer:
         )
         self.name = name if name is not None else type(self).__name__
 
-    def fit(
-        self, model: MultitaskModel, dataloaders: List["DictDataLoader"]
-    ) -> None:
+    def fit(self, model: MultitaskModel, dataloaders: List["DictDataLoader"]) -> None:
         """Train a MultitaskModel.
 
         Parameters
@@ -416,10 +414,7 @@ class Trainer:
         self.batch_scheduler = scheduler_class()  # type: ignore
 
     def _evaluate(
-        self,
-        model: MultitaskModel,
-        dataloaders: List["DictDataLoader"],
-        split: str,
+        self, model: MultitaskModel, dataloaders: List["DictDataLoader"], split: str,
     ) -> Metrics:
         """Evalute the current quality of the model on data for the requested split."""
         loaders = [d for d in dataloaders if d.dataset.split in split]  # type: ignore
@@ -468,9 +463,7 @@ class Trainer:
                     metric_name, metric_value, self.log_manager.point_total
                 )
 
-    def _checkpoint_model(
-        self, model: MultitaskModel, metric_dict: Metrics
-    ) -> None:
+    def _checkpoint_model(self, model: MultitaskModel, metric_dict: Metrics) -> None:
         """Save the current model."""
         if self.checkpointer is not None:
             self.checkpointer.checkpoint(
