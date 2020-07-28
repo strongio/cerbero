@@ -132,6 +132,7 @@ def metrics_dict_to_dataframe(metrics_dict: Dict[str, float]) -> pd.DataFrame:
         metrics, columns=["label", "dataset", "split", "metric", "score"]
     )
 
+
 class Database:
     """A basic relational database that allows multiple keys for one value"""
 
@@ -155,7 +156,7 @@ class Database:
                 self.values[value].add(key)
             elif value in self.values:
                 self.keys[key] = set()  # a new set
-                self.keys[key].add(value) # a new key
+                self.keys[key].add(value)  # a new key
                 self.values[value].add(key)  # but just an update to the values
         elif key in self.keys:  # it's a new relationships
             self.keys[key].add(value)
@@ -175,7 +176,7 @@ class Database:
                 self.keys[key].remove(old_value)
             del self.values[old_value]
         else:
-            raise KeyError("key: {} does not have value: {}".format(key,old_value))
+            raise KeyError("key: {} does not have value: {}".format(key, old_value))
 
     def __delitem__(self, key, value=None):  # <---SQL DELETE statement
         if value is None:
