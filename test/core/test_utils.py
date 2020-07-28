@@ -2,7 +2,12 @@ import unittest
 
 import torch
 
-from cerbero.core.utils import collect_flow_outputs_by_suffix, list_to_tensor, pad_batch
+from cerbero.core.utils import (
+    collect_flow_outputs_by_suffix,
+    list_to_tensor,
+    pad_batch,
+    Database,
+)
 
 
 class UtilsTest(unittest.TestCase):
@@ -120,6 +125,46 @@ class UtilsTest(unittest.TestCase):
         outputs = collect_flow_outputs_by_suffix(flow_dict, "_head")
         self.assertIn(torch.Tensor([1]), outputs)
         self.assertIn(torch.Tensor([2]), outputs)
+
+    def test_database_creation(self):
+        db = Database()
+        dataset = torch.Tensor([1,2,3])
+        db["task_1"] = dataset
+        db["task_2"] = dataset
+        self.assertIs(db["task_1"], db["task_2"])
+
+    def test_bulk_load_database_creation(self):
+        db = Database()
+        tasks, datasets = ["task_1", "task_2"], [torch.Tensor([1,2,3])]
+        db.iterload(tasks, datasets)
+        self.assertIs(db["task_1"], db["task_2"])
+
+    def test_database_update(self):
+        db = Database()
+        tasks, datasets = ["task_1", "task_2"], [torch.Tensor([1,2,3])]
+        db.iterload(tasks, datasets)
+        self.assertIs(db["task_1"], db["task_2"])
+        db["task_1"] = torch.Tensor([4,5,6])
+        self.assertIsNot(db["task_1"], db["task_2"])
+
+    def test_database_delete_key(self):
+        db = Database()
+        tasks, datasets = ["task_1", "task_2"], [torch.Tensor([1,2,3])]
+        db.iterload(tasks, datasets)
+        self.assertIs(db["task_1"], db["task_2"])
+        del db["task_2"]
+        self.assertNotIn("task_1", db.keys)
+
+    def test_database_delete_key_value(self):
+        db = Database()
+        dataset_1, dataset_2 = torch.Tensor([1,2,3]), torch.Tensor([3,4,5])
+        db["task_1"] = dataset_1
+        db["task_2"] = dataset_2
+        del db["task_1"]
+        self.assertNotIn("task_1", db.keys)
+        self.assertNotIn(dataset_2, db.values)
+
+
 
     if __name__ == "__main__":
         unittest.main()
