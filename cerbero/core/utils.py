@@ -1,14 +1,15 @@
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union, Set
 
 import numpy as np
 import pandas as pd
 import torch
+from torch import Tensor
 
-TensorCollection = Union[torch.Tensor, dict, list, tuple]
+TensorCollection = Union[Tensor, dict, list, tuple]
 
 
-def list_to_tensor(item_list: List[torch.Tensor]) -> torch.Tensor:
-    """Convert a list of torch.Tensor into a single torch.Tensor."""
+def list_to_tensor(item_list: List[Tensor]) -> Tensor:
+    """Convert a list of Tensor into a single Tensor."""
 
     # Convert single value tensor
     if all(item_list[i].dim() == 0 for i in range(len(item_list))):
@@ -27,11 +28,11 @@ def list_to_tensor(item_list: List[torch.Tensor]) -> torch.Tensor:
 
 
 def pad_batch(
-    batch: List[torch.Tensor],
+    batch: List[Tensor],
     max_len: int = 0,
     pad_value: int = 0,
     left_padded: bool = False,
-) -> Tuple[torch.Tensor, torch.Tensor]:
+) -> Tuple[Tensor, Tensor]:
     """Convert the batch into a padded tensor and mask tensor.
 
     Parameters
@@ -47,7 +48,7 @@ def pad_batch(
 
     Returns
     -------
-    Tuple[torch.Tensor, torch.Tensor]
+    Tuple[Tensor, Tensor]
         The padded matrix and correspoing mask matrix.
     """
 
@@ -76,7 +77,7 @@ def pad_batch(
 def move_to_device(
     obj: TensorCollection, device: int = -1
 ) -> TensorCollection:  # pragma: no cover
-    """Recursively move torch.Tensors to a given CUDA device.
+    """Recursively move Tensors to a given CUDA device.
 
     Given a structure (possibly) containing Tensors on the CPU, move all the Tensors
     to the specified GPU (or do nothing, if they should beon the CPU).
@@ -96,7 +97,7 @@ def move_to_device(
 
     if device < 0 or not torch.cuda.is_available():
         return obj
-    elif isinstance(obj, torch.Tensor):
+    elif isinstance(obj, Tensor):
         return obj.cuda(device)  # type: ignore
     elif isinstance(obj, dict):
         return {key: move_to_device(value, device) for key, value in obj.items()}
@@ -109,8 +110,8 @@ def move_to_device(
 
 
 def collect_flow_outputs_by_suffix(
-    output_dict: Dict[str, torch.Tensor], suffix: str
-) -> List[torch.Tensor]:
+    output_dict: Dict[str, Tensor], suffix: str
+) -> List[Tensor]:
     """Return output_dict outputs specified by suffix, ordered by sorted flow_name."""
     return [
         output_dict[flow_name]
@@ -136,22 +137,20 @@ def metrics_dict_to_dataframe(metrics_dict: Dict[str, float]) -> pd.DataFrame:
 class Database:
     """A basic relational database that allows multiple keys for one value"""
 
-    def __init__(self):
-        self.keys = {}
-        self.values = {}
+    def __init__(self) -> None:
+        self.keys: Dict[str, Tensor] = dict()
+        self.values: Dict[Tensor, Set[str]] = dict()
 
-    def __getitem__(self, item):  # <---SQL SELECT statement
-        return self.keys[item]
+    def __getitem__(self, key: str) -> Tensor:  # <---SQL SELECT statement
+        return self.keys[key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: Tensor) -> None:
         if key not in self.keys:  # it's a new key <---SQL INSERT statement
             if value not in self.values:  # it's a new value
-                self.keys[key] = dict()  # a new set
                 self.keys[key] = value
                 self.values[value] = set()  # a new set
                 self.values[value].add(key)
             elif value in self.values:
-                self.keys[key] = dict()  # a new set
                 self.keys[key] = value  # a new key
                 self.values[value].add(key)  # but just an update to the values
         elif key in self.keys:  # it's a new relationships
@@ -162,7 +161,7 @@ class Database:
             elif value in self.values:
                 self.values[value].add(key)
 
-    def update(self, key, old_value, new_value):
+    def update(self, key: str, old_value: Tensor, new_value: Tensor) -> None:
         """update is a special case because __setitem__ can't see that
         you want to propagate your update onto multiple values. """
         if old_value == self.keys[key]:
@@ -173,7 +172,7 @@ class Database:
         else:
             raise KeyError("key: {} does not have value: {}".format(key, old_value))
 
-    def __delitem__(self, key):  # <---SQL DELETE statement
+    def __delitem__(self, key: str) -> None:  # <---SQL DELETE statement
         try:
             value = self.keys[key]
             self.values[value].remove(key)
@@ -183,7 +182,7 @@ class Database:
         except KeyError:
             raise KeyError("key not found")
 
-    def iterload(self, key_list, value_list):
+    def iterload(self, key_list: List[str], value_list: List[Tensor]) -> None:
         for key in key_list:
             for value in value_list:
                 self.__setitem__(key, value)
