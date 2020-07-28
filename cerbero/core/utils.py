@@ -152,7 +152,7 @@ class Database:
                 self.values[value].add(key)
             elif value in self.values:
                 self.keys[key] = dict()  # a new set
-                self.keys[key] = value # a new key
+                self.keys[key] = value  # a new key
                 self.values[value].add(key)  # but just an update to the values
         elif key in self.keys:  # it's a new relationships
             self.keys[key] = value
@@ -171,7 +171,7 @@ class Database:
                 self.__setitem__(key, new_value)
             del self.values[old_value]
         else:
-            raise KeyError("key: {} does not have value: {}".format(key,old_value))
+            raise KeyError("key: {} does not have value: {}".format(key, old_value))
 
     def __delitem__(self, key):  # <---SQL DELETE statement
         try:
