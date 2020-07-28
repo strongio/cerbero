@@ -153,7 +153,7 @@ class UtilsTest(unittest.TestCase):
         db.iterload(tasks, datasets)
         self.assertIs(db["task_1"], db["task_2"])
         del db["task_2"]
-        self.assertNotIn("task_1", db.keys)
+        self.assertNotIn("task_2", db.keys)
 
     def test_database_delete_key_value(self):
         db = Database()
@@ -162,7 +162,7 @@ class UtilsTest(unittest.TestCase):
         db["task_2"] = dataset_2
         del db["task_1"]
         self.assertNotIn("task_1", db.keys)
-        self.assertNotIn(dataset_2, db.values)
+        self.assertNotIn(dataset_1, db.values)
 
 
 
