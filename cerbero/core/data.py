@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Tuple
 from torch import Tensor
 from torch.utils.data import DataLoader, Dataset
 
-from .utils import list_to_tensor
+from .utils import Database, list_to_tensor
 
 XDict = Dict[str, Any]
 YDict = Dict[str, Tensor]
