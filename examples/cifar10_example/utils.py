@@ -47,7 +47,7 @@ def make_cifar_dataset(train: bool = True, **kwargs: Any) -> DataSets:
     class_labels = np.stack(class_labels)
     rgb_labels = np.stack(rgb_labels)
 
-    return split_data(images, class_labels, rgb_labels, **kwargs)
+    return images, class_labels, rgb_labels
 
 
 def split_data(
